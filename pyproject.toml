@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "coinswitch"
+version = "0.1.0"
+description = "CoinSwitch API Wrapper"
+authors = ["Devansh3712 <devanshamity@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pydantic = "^2.3.0"
+httpx = "^0.24.1"
+cryptography = "^41.0.3"
+python-dotenv = "^1.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.3.3"
+black = "^23.7.0"
+pytest = "^7.4.0"
+mypy = "^1.5.1"
+tox = "^4.11.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
