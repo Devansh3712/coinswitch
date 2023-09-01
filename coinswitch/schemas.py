@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 class Currency(BaseModel):
@@ -44,3 +44,19 @@ class Trade(BaseModel):
 
 class Trades(BaseModel):
     data: List[Trade]
+
+
+class ExchangePrecisionInfo(BaseModel):
+    base: int
+    quote: int
+    limit: int
+
+
+class ExchangePrecisionPlatform(BaseModel):
+    coins: Dict[str, ExchangePrecisionInfo] = Field(
+        validation_alias=AliasChoices("coinswitchx", "wazirx")
+    )
+
+
+class ExchangePrecision(BaseModel):
+    data: ExchangePrecisionPlatform

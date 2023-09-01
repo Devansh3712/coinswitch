@@ -1,12 +1,12 @@
 import json
-from typing import Any, Dict, Literal
+from typing import Any, Dict, Literal, Optional
 from urllib.parse import unquote_plus, urlencode, urlparse
 
 import httpx
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from .constants import *
-from .schemas import Portfolio, Trades
+from .schemas import ExchangePrecision, Portfolio, Trades
 
 platform = Literal["coinswitchx", "wazirx"]
 
@@ -15,7 +15,7 @@ class CoinSwitch:
     def __init__(self, api_key: str, api_secret_key: str) -> None:
         self.api_key = api_key
         self.api_secret_key = api_secret_key
-        self.headers = {
+        self.headers: Dict[str, str] = {
             "Content-Type": "application/json",
             "X-AUTH-APIKEY": self.api_key,
         }
@@ -101,7 +101,8 @@ class CoinSwitch:
         """Get history of all of user's trades.
 
         Args:
-            exchange (platform): Exchange platform.
+            exchange (platform): Exchange platform, can have value "coinswitchx" or
+                                 "wazirx".
             symbol (str): Cryptocurrency symbol (case insensitive).
 
         Raises:
@@ -118,3 +119,31 @@ class CoinSwitch:
             raise httpx.RequestError("Unable to fetch the trade history")
         response_json = response.json()
         return Trades(**response_json)
+
+    def exchange_precision(
+        self, exchange: platform, symbol: Optional[str] = None
+    ) -> ExchangePrecision:
+        """Check precision coin and exchange wise.
+
+        Args:
+            exchange (platform): Exchange platform, can have value "coinswitchx" or
+                                 "wazirx".
+            symbol (Optional[str], optional): Cryptocurrency symbol (case insensitive).
+                                              Defaults to None.
+
+        Raises:
+            httpx.RequestError: Unable to fetch the coin exchange precision.
+
+        Returns:
+            ExchangePrecision: Base, limit and quote values for the given coin symbols.
+        """
+        endpoint = "/trade/api/v2/exchangePrecision"
+        payload: Dict[str, Any] = {"exchange": exchange}
+        if symbol:
+            payload["symbol"] = symbol
+        self.__set_signature_header(POST, endpoint, payload)
+        response = httpx.post(BASE_URL + endpoint, headers=self.headers, json=payload)
+        if response.status_code != 200:
+            raise httpx.RequestError("Unable to fetch the coin exchange precision")
+        response_json = response.json()
+        return ExchangePrecision(**response_json)
