@@ -1,0 +1,13 @@
+from typing import Any, Dict
+
+class CoinSwitch:
+    def __init__(self) -> None: ...
+    def __set_signature_header(
+        self,
+        method: str,
+        endpoint: str,
+        payload: Dict[str, Any] = ...,
+        params: Dict[str, Any] = ...,
+    ) -> None: ...
+    def ping(self) -> bool: ...
+    def validate_keys(self) -> bool: ...
