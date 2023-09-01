@@ -24,8 +24,7 @@ class CoinSwitch:
         payload: Dict[str, Any] = {},
         params: Dict[str, Any] = {},
     ) -> None:
-        """
-        To access CoinSwitch APIs we need to generate a signature and pass it as a
+        """To access CoinSwitch APIs we need to generate a signature and pass it as a
         header in every API call.
 
         Args:
@@ -52,8 +51,7 @@ class CoinSwitch:
         self.headers["X-AUTH-SIGNATURE"] = signature_bytes.hex()
 
     def ping(self) -> bool:
-        """
-        Check if our ecosystem has been successfully connected to the CoinSwitch
+        """Check if our ecosystem has been successfully connected to the CoinSwitch
         ecosystem.
 
         Returns:
@@ -67,8 +65,7 @@ class CoinSwitch:
         return False
 
     def validate_keys(self) -> bool:
-        """
-        Validate CoinSwitch API keys.
+        """Validate CoinSwitch API keys.
 
         Returns:
             bool: True if keys are valid else False.
