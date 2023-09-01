@@ -6,13 +6,14 @@ import httpx
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from .constants import *
+from .schemas import Portfolio
 
 
 class CoinSwitch:
     def __init__(self, api_key: str, api_secret_key: str) -> None:
         self.api_key = api_key
         self.api_secret_key = api_secret_key
-        self.headers: Dict[str, str] = {
+        self.headers = {
             "Content-Type": "application/json",
             "X-AUTH-APIKEY": self.api_key,
         }
@@ -76,3 +77,20 @@ class CoinSwitch:
         if response.status_code == 200:
             return True
         return False
+
+    def portfolio(self) -> Portfolio:
+        """Check the user's portfolio.
+
+        Raises:
+            httpx.RequestError: Unable to fetch the portfolio.
+
+        Returns:
+            Portfolio: List of cryptocurrencies owned by the user.
+        """
+        endpoint = "/trade/api/v2/user/portfolio"
+        self.__set_signature_header(GET, endpoint)
+        response = httpx.get(BASE_URL + endpoint, headers=self.headers)
+        if response.status_code != 200:
+            raise httpx.RequestError("Unable to fetch user's portfolio")
+        response_json = response.json()
+        return Portfolio(**response_json)

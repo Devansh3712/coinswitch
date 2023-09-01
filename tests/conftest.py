@@ -7,7 +7,7 @@ from coinswitch.base import CoinSwitch
 
 
 @pytest.fixture()
-def coinswitch_object():
+def coinswitch_object() -> CoinSwitch:
     load_dotenv()
     api_key = os.environ["COINSWITCH_API_KEY"]
     api_secret_key = os.environ["COINSWITCH_API_SECRET_KEY"]
