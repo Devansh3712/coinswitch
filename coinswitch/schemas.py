@@ -53,6 +53,8 @@ class ExchangePrecisionData(BaseModel):
 
 
 class ExchangePrecision(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     coins: Dict[str, ExchangePrecisionData] = Field(
         validation_alias=AliasChoices("coinswitchx", "wazirx")
     )
@@ -66,6 +68,8 @@ class OrderBook(BaseModel):
 
 
 class CandleData(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     start_time: datetime
     close_time: datetime
     symbol: str
@@ -82,6 +86,8 @@ class Candles(BaseModel):
 
 
 class TickerData(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     symbol: str
     base_asset: str = Field(alias="baseAsset")
     quote_asset: str = Field(alias="quoteAsset")
