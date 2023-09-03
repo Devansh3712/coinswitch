@@ -6,7 +6,7 @@ import httpx
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from .constants import *
-from .schemas import ExchangePrecision, Portfolio, Trades
+from .schemas import ExchangePrecision, OrderBook, Portfolio, Trades
 
 platform = Literal["coinswitchx", "wazirx"]
 
@@ -145,5 +145,28 @@ class CoinSwitch:
         response = httpx.post(BASE_URL + endpoint, headers=self.headers, json=payload)
         if response.status_code != 200:
             raise httpx.RequestError("Unable to fetch the coin exchange precision")
-        response_json = response.json()
+        response_json = response.json()["data"]
         return ExchangePrecision(**response_json)
+
+    def depth(self, exchange: platform, symbol: str) -> OrderBook:
+        """Check the orderbook for a coin.
+
+        Args:
+            exchange (platform): Exchange platform, can have value "coinswitchx" or
+                                 "wazirx".
+            symbol (str): Cryptocurrency symbol (case insensitive).
+
+        Raises:
+            httpx.RequestError: Unable to fetch the orderbook.
+
+        Returns:
+            OrderBook: List of asks and bids for a coin.
+        """
+        endpoint = "/trade/api/v2/depth"
+        params = {"exchange": exchange, "symbol": symbol}
+        self.__set_signature_header(GET, endpoint, params=params)
+        response = httpx.get(BASE_URL + endpoint, headers=self.headers, params=params)
+        if response.status_code != 200:
+            raise httpx.RequestError("Unable to fetch the orderbook")
+        response_json = response.json()["data"]
+        return OrderBook(**response_json)

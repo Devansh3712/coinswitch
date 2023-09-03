@@ -52,11 +52,14 @@ class ExchangePrecisionInfo(BaseModel):
     limit: int
 
 
-class ExchangePrecisionPlatform(BaseModel):
+class ExchangePrecision(BaseModel):
     coins: Dict[str, ExchangePrecisionInfo] = Field(
         validation_alias=AliasChoices("coinswitchx", "wazirx")
     )
 
 
-class ExchangePrecision(BaseModel):
-    data: ExchangePrecisionPlatform
+class OrderBook(BaseModel):
+    timestamp: datetime
+    bids: List[List[float]]
+    asks: List[List[float]]
+    symbol: str

@@ -1,4 +1,4 @@
-from coinswitch.schemas import ExchangePrecision, Portfolio, Trades
+from coinswitch.schemas import ExchangePrecision, OrderBook, Portfolio, Trades
 
 
 def test_ping(coinswitch_object) -> None:
@@ -25,4 +25,11 @@ def test_exchange_precision(coinswitch_object) -> None:
     result: ExchangePrecision = coinswitch_object.exchange_precision(
         "coinswitchx", "btc/inr"
     )
-    assert len(result.data.coins) == 1
+    print(result.model_dump_json(indent=4))
+    assert len(result.coins) == 1
+
+
+def test_depth(coinswitch_object) -> None:
+    result: OrderBook = coinswitch_object.depth("coinswitchx", "btc/inr")
+    assert len(result.asks) == 100
+    assert len(result.bids) == 100

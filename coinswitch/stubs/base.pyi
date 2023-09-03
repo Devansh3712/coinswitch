@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
 from ..base import platform
-from ..schemas import ExchangePrecision, Portfolio, Trades
+from ..schemas import ExchangePrecision, OrderBook, Portfolio, Trades
 
 class CoinSwitch:
     def __init__(self) -> None: ...
@@ -19,3 +19,4 @@ class CoinSwitch:
     def exchange_precision(
         self, exchange: platform, symbol: Optional[str] = ...
     ) -> ExchangePrecision: ...
+    def depth(self, exchange: platform, symbol: str) -> OrderBook: ...
