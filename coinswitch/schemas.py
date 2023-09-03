@@ -1,15 +1,16 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
 
 
 class Currency(BaseModel):
     currency: str
+    name: str
+    main_balance: float
     blocked_balance_deposit: float
     blocked_balance_withdraw: float
     blocked_balance_order: float
-    main_balance: float
     blocked_balance_stake: float
     blocked_balance_vault: float
     buy_average_price: float
@@ -19,7 +20,6 @@ class Currency(BaseModel):
     sell_rate: float
     buy_rate: float
     is_average_price_available: Optional[bool] = None
-    name: str
     is_delisted_coin: Optional[bool] = None
 
 
@@ -46,14 +46,14 @@ class Trades(BaseModel):
     data: List[Trade]
 
 
-class ExchangePrecisionInfo(BaseModel):
+class ExchangePrecisionData(BaseModel):
     base: int
     quote: int
     limit: int
 
 
 class ExchangePrecision(BaseModel):
-    coins: Dict[str, ExchangePrecisionInfo] = Field(
+    coins: Dict[str, ExchangePrecisionData] = Field(
         validation_alias=AliasChoices("coinswitchx", "wazirx")
     )
 
@@ -65,7 +65,7 @@ class OrderBook(BaseModel):
     symbol: str
 
 
-class CandlesInfo(BaseModel):
+class CandleData(BaseModel):
     start_time: datetime
     close_time: datetime
     symbol: str
@@ -78,4 +78,31 @@ class CandlesInfo(BaseModel):
 
 
 class Candles(BaseModel):
-    data: List[CandlesInfo]
+    data: List[CandleData]
+
+
+class TickerData(BaseModel):
+    symbol: str
+    base_asset: str = Field(alias="baseAsset")
+    quote_asset: str = Field(alias="quoteAsset")
+    open_price: float = Field(alias="openPrice")
+    low_price: float = Field(alias="lowPrice")
+    high_price: float = Field(alias="highPrice")
+    last_price: float = Field(alias="lastPrice")
+    base_volume: float = Field(alias="baseVolume")
+    quoute_volume: float = Field(alias="quoteVolume")
+    percentage_change: float = Field(alias="percentageChange")
+    bid: Optional[float] = Field(None, alias="bidPrice")
+    ask: Optional[float] = Field(None, alias="askPrice")
+    at: datetime
+
+    @field_validator("bid", "ask", mode="before")
+    @classmethod
+    def empty_to_None(cls, value: str) -> Union[float, None]:
+        if value == "":
+            return None
+        return float(value)
+
+
+class Ticker(BaseModel):
+    data: Dict[str, TickerData]

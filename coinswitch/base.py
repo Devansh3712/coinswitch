@@ -20,7 +20,7 @@ class CoinSwitch:
             "X-AUTH-APIKEY": self.api_key,
         }
 
-    def __set_signature_header(
+    def _set_signature_header(
         self,
         method: str,
         endpoint: str,
@@ -61,7 +61,7 @@ class CoinSwitch:
             bool: True if connected else False.
         """
         endpoint = "/trade/api/v2/ping"
-        self.__set_signature_header(GET, endpoint)
+        self._set_signature_header(GET, endpoint)
         response = httpx.get(BASE_URL + endpoint, headers=self.headers)
         if response.status_code == 200:
             return True
@@ -74,7 +74,7 @@ class CoinSwitch:
             bool: True if keys are valid else False.
         """
         endpoint = "/trade/api/v2/validate/keys"
-        self.__set_signature_header(GET, endpoint)
+        self._set_signature_header(GET, endpoint)
         response = httpx.get(BASE_URL + endpoint, headers=self.headers)
         if response.status_code == 200:
             return True
@@ -90,7 +90,7 @@ class CoinSwitch:
             Portfolio: List of cryptocurrencies owned by the user.
         """
         endpoint = "/trade/api/v2/user/portfolio"
-        self.__set_signature_header(GET, endpoint)
+        self._set_signature_header(GET, endpoint)
         response = httpx.get(BASE_URL + endpoint, headers=self.headers)
         if response.status_code != 200:
             raise httpx.RequestError("Unable to fetch the portfolio")
@@ -113,7 +113,7 @@ class CoinSwitch:
         """
         endpoint = "/trade/api/v2/trades"
         params = {"exchange": exchange, "symbol": symbol}
-        self.__set_signature_header(GET, endpoint, params=params)
+        self._set_signature_header(GET, endpoint, params=params)
         response = httpx.get(BASE_URL + endpoint, headers=self.headers, params=params)
         if response.status_code != 200:
             raise httpx.RequestError("Unable to fetch the trade history")
@@ -141,7 +141,7 @@ class CoinSwitch:
         payload: Dict[str, Any] = {"exchange": exchange}
         if symbol:
             payload["symbol"] = symbol
-        self.__set_signature_header(POST, endpoint, payload)
+        self._set_signature_header(POST, endpoint, payload)
         response = httpx.post(BASE_URL + endpoint, headers=self.headers, json=payload)
         if response.status_code != 200:
             raise httpx.RequestError("Unable to fetch the coin exchange precision")
@@ -164,7 +164,7 @@ class CoinSwitch:
         """
         endpoint = "/trade/api/v2/depth"
         params = {"exchange": exchange, "symbol": symbol}
-        self.__set_signature_header(GET, endpoint, params=params)
+        self._set_signature_header(GET, endpoint, params=params)
         response = httpx.get(BASE_URL + endpoint, headers=self.headers, params=params)
         if response.status_code != 200:
             raise httpx.RequestError("Unable to fetch the orderbook")
@@ -203,7 +203,7 @@ class CoinSwitch:
             "interval": interval,
             "exchange": exchange,
         }
-        self.__set_signature_header(GET, endpoint, params=params)
+        self._set_signature_header(GET, endpoint, params=params)
         response = httpx.get(BASE_URL + endpoint, headers=self.headers, params=params)
         response_json = response.json()
         if response.status_code != 200:

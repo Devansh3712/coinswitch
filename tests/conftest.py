@@ -4,11 +4,18 @@ import pytest
 from dotenv import load_dotenv
 
 from coinswitch.base import CoinSwitch
+from coinswitch.ticker import Ticker
+
+load_dotenv()
+API_KEY = os.environ["COINSWITCH_API_KEY"]
+API_SECRET_KEY = os.environ["COINSWITCH_API_SECRET_KEY"]
 
 
 @pytest.fixture()
 def coinswitch_object() -> CoinSwitch:
-    load_dotenv()
-    api_key = os.environ["COINSWITCH_API_KEY"]
-    api_secret_key = os.environ["COINSWITCH_API_SECRET_KEY"]
-    return CoinSwitch(api_key, api_secret_key)
+    return CoinSwitch(API_KEY, API_SECRET_KEY)
+
+
+@pytest.fixture()
+def ticker_object() -> Ticker:
+    return Ticker(API_KEY, API_SECRET_KEY)
