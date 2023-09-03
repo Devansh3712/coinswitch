@@ -63,3 +63,19 @@ class OrderBook(BaseModel):
     bids: List[List[float]]
     asks: List[List[float]]
     symbol: str
+
+
+class CandlesInfo(BaseModel):
+    start_time: datetime
+    close_time: datetime
+    symbol: str
+    open: float = Field(alias="o")
+    high: float = Field(alias="h")
+    low: float = Field(alias="l")
+    close: float = Field(alias="c")
+    interval: int
+    volume: float
+
+
+class Candles(BaseModel):
+    data: List[CandlesInfo]

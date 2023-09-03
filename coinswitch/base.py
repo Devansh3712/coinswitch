@@ -6,7 +6,7 @@ import httpx
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from .constants import *
-from .schemas import ExchangePrecision, OrderBook, Portfolio, Trades
+from .schemas import Candles, ExchangePrecision, OrderBook, Portfolio, Trades
 
 platform = Literal["coinswitchx", "wazirx"]
 
@@ -170,3 +170,42 @@ class CoinSwitch:
             raise httpx.RequestError("Unable to fetch the orderbook")
         response_json = response.json()["data"]
         return OrderBook(**response_json)
+
+    def candles(
+        self,
+        exchange: platform,
+        symbol: str,
+        interval: int,
+        start_time: int,
+        end_time: int,
+    ) -> Candles:
+        """Get candlestick data of an interval.
+
+        Args:
+            exchange (platform): Exchange platform, can have value "coinswitchx" or
+                                 "wazirx".
+            symbol (str): Cryptocurrency symbol (case insensitive).
+            interval (int): Duration of candlestick in minutes.
+            start_time (int): Timestamp in milliseconds (Unix epoch).
+            end_time (int): Timestamp in milliseconds (Unix epoch).
+
+        Raises:
+            httpx.RequestError: Unable to fetch the candlesticks.
+
+        Returns:
+            Candles: List of candlesticks for the given interval.
+        """
+        endpoint = "/trade/api/v2/candles"
+        params: Dict[str, Any] = {
+            "end_time": end_time,
+            "start_time": start_time,
+            "symbol": symbol,
+            "interval": interval,
+            "exchange": exchange,
+        }
+        self.__set_signature_header(GET, endpoint, params=params)
+        response = httpx.get(BASE_URL + endpoint, headers=self.headers, params=params)
+        response_json = response.json()
+        if response.status_code != 200:
+            raise httpx.RequestError("Unable to fetch the candlesticks")
+        return Candles(**response_json)
